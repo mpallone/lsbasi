@@ -63,8 +63,7 @@ class Interpreter(object):
         # index to point to the next character after the digit,
         # and return the INTEGER token
         if current_char.isdigit():
-            token = Token(INTEGER, int(current_char))
-            self.pos += 1
+            token = self.get_integer_token()
             return token
 
         if current_char == '+':
@@ -73,6 +72,24 @@ class Interpreter(object):
             return token
 
         self.error()
+
+    def get_integer_token(self):
+        """Assumes that self.pos points to the start of an int.
+        Returns that int as a token, and sets pos equal to the
+        index IMMEDIATELY AFTER the returned token."""
+        digits = []
+
+        for i in range(self.pos, len(self.text)):
+            current_char = self.text[self.pos]
+            if current_char.isdigit():
+                digits.append(current_char)
+                self.pos += 1
+            else:
+                break # optimization
+
+        value = "".join(map(str, digits))
+        return Token(INTEGER, int(value))
+                
 
     def eat(self, token_type):
         # compare the current token type with the passed token
